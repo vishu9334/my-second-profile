@@ -1,27 +1,22 @@
-// import { ApiError } from "../utils/ApiError.js";
-// export const validate = (schema) => (err, req, res, next) =>{
-//     const result = schema.safeParse(req.body);
-//     if(!result.success){
-//         const errors = result.error.issues.map(err=>({
-//             field: err.path.join('.'),
-//             message: err.message
-//         }));
-//         return next( new ApiError(400, "Validation Error", errors));
-
-//     }
-//     req.body = result.data;
-//     next()
-// }
-
 export const validate = (schema) => async (req, res, next) =>{
-    try{
+    try {
         const parseBody = await schema.parseAsync(req.body);
         req.body = parseBody;
         next();
+    } catch (err) {
 
-    }catch(err){
-        const message = err.errors[0].message;
-        console.log(message);
-        res.status(400).json({msg: message})
+        if (err.name === "ZodError") {
+            const errors = err.issues.map(issue => issue.message);
+
+            return res.status(400).json({
+                success: false,
+                errors
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            message: err.message || "Internal Server Error"
+        });
     }
-}
+};

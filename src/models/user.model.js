@@ -1,32 +1,53 @@
-import mongoose,{Schema} from "mongoose";
-import bcrypt from "bcrypt"
-const userSchema  = new Schema({
-    username:{
-        type:String,
-        required:true,
-        unique:true,
+import mongoose, { Schema } from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+const userSchema = new Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true,
+    email: {
+      type: String,
+      required: true,
+      unique: true,
     },
-    password:{
-        type:String,
-        required:true,
+    password: {
+      type: String,
+      required: true,
     },
-    role:{
-        type:String,
-        enum:['viewer','owner'],
-        default:'viewer'
-    }
-},{timestamps:true});
+    role: {
+      type: String,
+      enum: ["viewer", "owner"],
+      default: "viewer",
+    },
+    refreshToken: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
 
-userSchema.pre("save", async function(next){
-    if(!this.isModified("password")) return next()
-        const saltRound =10
-       this.password = await bcrypt.hash(this.password,saltRound)
-    next()
-})
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return ;
+  const saltRound = 10;
+  this.password = await bcrypt.hash(this.password, saltRound);
+  // next();
+});
 
-export const User = mongoose.model("User",userSchema)
+export const User = mongoose.model("User", userSchema);
+
+export const generateAccessToken = (User) => {
+  return jwt.sign(
+    {
+      _id: User._id,
+    },
+    process.env.ACC_TO,
+    { expiresIn: "15m" }
+  );
+};
+
+export const generateRefreshToken = (User) => {
+  return jwt.sign({ _id: User._id }, process.env.REF_TO, { expiresIn: "7d" });
+};
