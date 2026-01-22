@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 import  register  from './routes/register.route.js';
 import login from "./routes/login.route.js"
 import {globalErrorMiddleware} from "./middlewares/global.middleware.js"
+import loggedOut from "./routes/loggedOut.route.js"
+
 const app = express()
 app.use(cors({
     origin:process.env.CORS_ORIGIN,
@@ -16,6 +18,7 @@ app.use(cookieParser())
 
 app.use("/v1/user", register)
 app.use("/v1/user", login)
+app.use("/v1/user",loggedOut)
 
 app.use((req, res, next) => {
   const error = new Error(`Not Found - ${req.originalUrl}`);

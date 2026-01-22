@@ -62,7 +62,13 @@ export const login = asyncHandler(async(req, res)=>{
       user.refreshToken = refreshToken;
       await user.save({ validateBeforeSave: false});
 
-      res.cookie("refreshToken", refreshToken, {
+      res.cookie("accessToken", accessToken, {
+         httpOnly:true,
+        secure:true,
+        sameSite: "strict",
+        maxAge: 15 * 60 * 1000
+      })
+      .cookie("refreshToken", refreshToken, {
         httpOnly:true,
         secure:true,
         sameSite: "strict",
@@ -70,6 +76,7 @@ export const login = asyncHandler(async(req, res)=>{
       }).json({
         success:true,
         accessToken,
+        refreshToken,
         user:{
           _id : user._id,
           username:user.username,
@@ -78,3 +85,17 @@ export const login = asyncHandler(async(req, res)=>{
       })
 
 })
+
+export const logout = asyncHandler(async (req, res)=> {
+    res.clearCookie("accessToken", {
+      httpOnly:true,
+      secure:true,
+      sameSite:"strict"
+    })
+
+    res.status(200).json(new ApiResponse(200, {message:"Logged out successfully"}))
+})
+
+export const forgotPassword = asyncHandler(async(req, res)=>{
+        
+}) 
