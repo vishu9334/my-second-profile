@@ -14,11 +14,31 @@ const heroSchema = new Schema(
 
     role: {
       type: String,
+      enum: [
+        "Junior Developer",
+        "Senior Developer",
+        "Frontend Developer",
+        "Backend Developer",
+        "Fullstack Developer",
+      ],
       required: true,
     },
 
-    techStack: {
+    backendStack: {
       type: [String],
+      enum: ["MongoDB", "Express.js", "Node.js"],
+      required: true,
+    },
+
+    frontendStack: {
+      type: [String],
+      enum: ["React.js", "Tailwind CSS", "CSS", "HTML"],
+      required: true,
+    },
+
+    toolsStack: {
+      type: [String],
+      enum: ["GitHub", "Git", "Postman", "Notion"],
       required: true,
     },
 

@@ -43,11 +43,11 @@ export const generateAccessToken = (User) => {
     {
       _id: User._id,
     },
-    process.env.ACC_TO,
+    process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
   );
 };
 
 export const generateRefreshToken = (User) => {
-  return jwt.sign({ _id: User._id }, process.env.REF_TO, { expiresIn: "7d" });
+  return jwt.sign({ _id: User._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 };

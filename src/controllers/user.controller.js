@@ -22,16 +22,32 @@ export const registerUser = asyncHandler(async ( req, res) => {
     role = "viewer";
   }
 
-  const userCreate = await User.create({
-    username,
-    email,
-    password,
-    role,
-  });
+    try {
+    const userCreate = await User.create({
+      username,
+      email,
+      password,
+      role,
+    });
 
-  res
-    .status(201)
-    .json(new ApiResponse(201, userCreate, "User registered successfully"));
+    res.status(201).json(
+      new ApiResponse(
+        201,
+        userCreate,
+        "User registered successfully"
+      )
+    );
+  } catch (error) {
+    // 🔥 THIS IS THE MISSING PART
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+      throw new ApiError(
+        409,
+        `${field} already exists`
+      );
+    }
+    throw error;
+  }
    
 });
 
@@ -96,6 +112,6 @@ export const logout = asyncHandler(async (req, res)=> {
     res.status(200).json(new ApiResponse(200, {message:"Logged out successfully"}))
 })
 
-export const forgotPassword = asyncHandler(async(req, res)=>{
+// export const forgotPassword = asyncHandler(async(req, res)=>{
         
-}) 
+// }) 

@@ -1,22 +1,21 @@
-export const validate = (schema) => async (req, res, next) =>{
-    try {
-        const parseBody = await schema.parseAsync(req.body);
-        req.body = parseBody;
-        next();
-    } catch (err) {
+import { ApiError } from "../utils/ApiError.js";
 
-        if (err.name === "ZodError") {
-            const errors = err.issues.map(issue => issue.message);
+export const validate = (schema) => (req, res, next) => {
+  const result = schema.safeParse(req.body);
 
-            return res.status(400).json({
-                success: false,
-                errors
-            });
-        }
+  if (!result.success) {
+    const fieldErrors = result.error.flatten().fieldErrors;
 
-        return res.status(500).json({
-            success: false,
-            message: err.message || "Internal Server Error"
-        });
-    }
+    const errors = Object.entries(fieldErrors).map(
+      ([field, messages]) => `${field}: ${messages[0]}`
+    );
+
+    return res.status(400).json({
+      success: false,
+      errors,
+    });
+  }
+
+  req.body = result.data;
+  next();
 };
