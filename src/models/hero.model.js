@@ -1,7 +1,11 @@
 import mongoose, { Schema } from "mongoose";
-
 const heroSchema = new Schema(
   {
+    heroAvatar:{
+      type: String,
+      required:true,
+
+    },
     initialText: {
       type: String,
       required: true,
@@ -11,7 +15,7 @@ const heroSchema = new Schema(
       type: String,
       required: true,
     },
-
+          
     role: {
       type: String,
       enum: [

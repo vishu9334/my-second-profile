@@ -30,15 +30,17 @@ export const registerUser = asyncHandler(async ( req, res) => {
       role,
     });
 
+    const createdUser = await User.findById(userCreate._id).select("-password -refreshToken")
+    if(!createdUser) throw new ApiError(500, "Something went wrong while registering the user")
+
     res.status(201).json(
       new ApiResponse(
-        201,
-        userCreate,
+        200,
+        createdUser,
         "User registered successfully"
       )
     );
   } catch (error) {
-    // 🔥 THIS IS THE MISSING PART
     if (error.code === 11000) {
       const field = Object.keys(error.keyValue)[0];
       throw new ApiError(

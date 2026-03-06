@@ -16,8 +16,8 @@ export const accessTokenCheck = asyncHandler(async (req, res, next) => {
     token,
     process.env.ACCESS_TOKEN_SECRET
   );
-
+      
   req.user = decoded; // 🔥 THIS IS THE KEY LINE
 
   next();
-});
+});        
