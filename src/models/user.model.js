@@ -29,11 +29,11 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", async function () {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return ;
   const saltRound = 10;
   this.password = await bcrypt.hash(this.password, saltRound);
-  // next();
+  next();
 });
 
 export const User = mongoose.model("User", userSchema);
@@ -44,10 +44,10 @@ export const generateAccessToken = (User) => {
       _id: User._id,
     },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "15m" }
+    { expiresIn:process.env.ACCESS_TOKEN_EXPIRY}
   );
 };
 
 export const generateRefreshToken = (User) => {
-  return jwt.sign({ _id: User._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ _id: User._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY});
 };

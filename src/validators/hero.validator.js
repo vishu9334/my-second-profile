@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const heroSchemaZod = z
   .object({
+    heroAvatar: z.string().optional(),
     initialText: z.string().min(1, "initialText cannot be empty"),
     name: z.string().min(1, "name cannot be empty"),
 
@@ -14,7 +15,7 @@ export const heroSchemaZod = z
     ]),
 
     backendStack: z
-      .array(z.enum(["MongoDB", "Express.js", "Node.js"]))
+    .array(z.enum(["MongoDB", "Express.js", "Node.js"]))
       .min(1, "backendStack cannot be empty")
       .optional(),
 

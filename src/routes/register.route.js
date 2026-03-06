@@ -4,9 +4,10 @@ import { validate } from "../middlewares/validate.js"
 import {zodCreateUserSchema} from "../validators/user.validator.js"
 
 
+
 const router = Router();
 
-router.post("/register", validate(zodCreateUserSchema), registerUser)
+router.post("/register",validate(zodCreateUserSchema), registerUser)
 
 
 export default router
