@@ -10,7 +10,7 @@ import coerceStacks from "../middlewares/coerceArray.middleware.js";
 const router = Router();
 
 router.route("/skill").patch(accessTokenCheck, upload.fields([
-   { name: "skillTeachLogo", maxCount: 5 },
+   { name: "skillTeachLogo", maxCount: 30 },
    { name: "applicationLogo", maxCount: 5 }
  ]),coerceStacks, validate(skillSchemaZod), skillSection )
 
