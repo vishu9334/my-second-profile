@@ -15,7 +15,7 @@ export const heroSchemaZod = z
     ]),
 
     backendStack: z
-    .array(z.enum(["MongoDB", "Express.js", "Node.js"]))
+    .array(z.enum(["MongoDB", "Express.js", "Node.js","Socket.io","SQL","Mongoose","JWT","Bcrypt","Redis","crypto","Zod"]))
       .min(1, "backendStack cannot be empty")
       .optional(),
 

@@ -18,10 +18,8 @@ export const heroSection = asyncHandler(async (req, res) => {
   }
 //multer to req.file use
 const heroAvatarLocalPath = req.file?.path;
-console.log("FILE PATH 👉", heroAvatarLocalPath);
 if(!heroAvatarLocalPath) throw new ApiError(400, "Avatar file is required.");
  const heroPic =  await uploadOnCloudinary(heroAvatarLocalPath)
- console.log("cloudinary response 👉", heroPic);
 if(!heroPic?.secure_url)  throw new ApiError(500, "Failed to upload avatar to Cloudinary.");
   // req.body already validated
   const {
@@ -36,7 +34,7 @@ if(!heroPic?.secure_url)  throw new ApiError(500, "Failed to upload avatar to Cl
   const heroData = await Hero.findOneAndUpdate(
     { createdBy: req.user._id },
     {
-     heroAvatar: heroPic.secure_url,
+     heroAvatar: heroPic.secure_url || "",
       initialText,
       name,
       role,

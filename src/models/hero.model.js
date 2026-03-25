@@ -3,7 +3,7 @@ const heroSchema = new Schema(
   {
     heroAvatar:{
       type: String,
-      required:true,
+      // required:true,
 
     },
     initialText: {
@@ -30,7 +30,7 @@ const heroSchema = new Schema(
 
     backendStack: {
       type: [String],
-      enum: ["MongoDB", "Express.js", "Node.js"],
+      enum: ["MongoDB", "Express.js", "Node.js","Socket.io","SQL","Mongoose","JWT","Bcrypt","Redis","crypto","Zod",],
       required: true,
     },
 

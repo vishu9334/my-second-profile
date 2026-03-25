@@ -1,9 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import {toCamelCase} from "../utils/cammelCase.js"
 
-
-
-
 const skillSet = new Schema(
   {
     skillTeachLogo: {
