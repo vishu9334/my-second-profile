@@ -11,26 +11,28 @@ export const aboutSection = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Login required");
   }
 
-  const test = await About.findOne({ createdBy: req.user._id });
-console.log(test);
   const user = await User.findById(req.user._id);
   if (!user || user.role !== "owner") {
     throw new ApiError(403, "Access denied");
   }
 
 
-  const arrayFields = ["img", "aboutTitle", "paragraph", "hobbies"];
+  const arrayFields = ["img", "aboutTitle", "paragraph", "hobbies"]; //this is white field
   const updateQuery = {};
 
   let eventArrImage = [];
   // const eventImages = req.file?.path; 
   if (req.files && req.files.img && req.files.img.length > 0) {  //Files exist karti hain? Aur kam se kam 1 file hai?
     const eventImages = req.files.img.map((file) => file.path);
-    console.log(eventImages);
     for (let aboutImg of eventImages) {
-      const result = await uploadOnCloudinary(aboutImg); 
+      const result = await uploadOnCloudinary(aboutImg);
+      console.log("Cloudinary upload result:", result);
       if (result?.secure_url) {
+        console.log("Image uploaded successfully:", result.secure_url);
         eventArrImage.push(result.secure_url);
+      } else {
+        console.error("Cloudinary upload failed for file:", aboutImg, "Result:", result);
+        throw new ApiError(500, `Failed to upload image: ${result?.error?.message || "Unknown error"}`);
       }
     }
     if (eventArrImage.length > 0) {
@@ -44,12 +46,21 @@ console.log(test);
   // ============================================
   // Support direct form-data array fields
   // ============================================
-  arrayFields.forEach((field) => {
-    if (req.body[field] !== undefined) {
-      const value = Array.isArray(req.body[field])
-        ? req.body[field]
-        : [req.body[field]];
+  const replaceArrays =
+    req.body.replaceArrays === true || req.body.replaceArrays === "true";
 
+  arrayFields.forEach((field) => {
+    if (req.body[field] === undefined) return;
+    const value = Array.isArray(req.body[field])
+      ? req.body[field]
+      : [req.body[field]];
+
+    if (replaceArrays) {
+      updateQuery.$set = {
+        ...updateQuery.$set,
+        [field]: value,
+      };
+    } else {
       updateQuery.$addToSet = {
         ...updateQuery.$addToSet,
         [field]: { $each: value },
@@ -103,7 +114,7 @@ stringFields.forEach((field)=>{
   // 🧠 UPDATE ONLY OWNER DOCUMENT
   // =============================
 
-  const updatedAbout = await About.findOneAndUpdate(
+  let updatedAbout = await About.findOneAndUpdate(
     { createdBy: new mongoose.Types.ObjectId(req.user._id) },
     {
       ...updateQuery,
@@ -121,4 +132,13 @@ stringFields.forEach((field)=>{
     .json(
       new ApiResponse(200, updatedAbout, "About section updated successfully"),
     );
+});
+
+export const deleteAboutSection = asyncHandler(async (req, res) => {
+  if (!req.user) throw new ApiError(401, "Login required");
+  const user = await User.findById(req.user._id);
+  if (!user || user.role !== "owner") throw new ApiError(403, "Access denied");
+
+  await About.deleteOne({ createdBy: req.user._id });
+  res.status(200).json(new ApiResponse(200, {}, "About section deleted"));
 });
