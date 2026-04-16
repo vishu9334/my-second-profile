@@ -28,3 +28,12 @@ export const intro = asyncHandler(async (req, res)=>{
     new ApiResponse(200, hero2Data, "Hero2 section updated or created")
   );
 })
+
+export const deleteHero2Section = asyncHandler(async (req, res) => {
+  if (!req.user) throw new ApiError(401, "Login required");
+  const user = await User.findById(req.user._id);
+  if (!user || user.role !== "owner") throw new ApiError(403, "Access denied");
+
+  await Hero2.deleteOne({ createdBy: req.user._id });
+  res.status(200).json(new ApiResponse(200, {}, "Intro section deleted"));
+});
